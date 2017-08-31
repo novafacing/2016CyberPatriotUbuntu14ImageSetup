@@ -1,0 +1,110 @@
+#! /bin/bash
+POINTSSCORED=""
+echo "Cyberpatriot Automatic Scoring System Scoreboard" > /cp/points/scoredpoints
+updatedb
+userName=$(cat /cp/baseusername)
+forensicsQuestionOne=$(cat /home/$userName/Desktop/ForensicsQuestions | grep "msawyer")
+forensicsQuestionTwo=$(cat /home/$userName/Desktop/ForensicsQuestions | grep "projectcadmusmainframe")
+minPasswordLength=$(cat /etc/pam.d/common-password | grep "minlen")
+maliciousBinScript=$(locate masterkey.sh | grep "masterkey")
+delugeRemoved=$(dpkg --list | grep deluge)
+ytDownloaderRemoved=$(dpkg --list | grep youtube-dl)
+cronDailyScript=$(locate nastymod | grep nastymod)
+fireWallConfig=$(ufw status | grep "Status: active")
+fireWallConfigTwo=$(ufw status verbose | grep "Default: deny")
+fireWallConfigThree=$(ufw status | grep "22")
+fireWallConfigFour=$(ufw status | grep "80")
+rootLoginDisabledOne=$(cat /etc/sudoers | grep -v "This file MUST" | grep -v "Members of the" | grep "root")
+maxPasswordAge=$(cat /etc/login.defs | grep "PASS_MAX_DAYS")
+maxPasswordAge=$(echo $maxPasswordAge | tr -cd [[:digit:]])
+sshRootLoginDisabled=$(cat /etc/ssh/sshd_config | grep "PermitRootLogin[[:space:]]*no")
+guestAccountDisabled=$(cat /etc/lightdm/lightdm.conf | grep "allow-guest")
+rootKernelDisabled=$(cat /etc/sysctl.d/10-kernel-hardening.conf | grep "kernel.kptr_restrict=2")
+mitmAttackPrevention=$(cat /etc/sysctl.conf | grep "net.ipv4.conf.all.log_martians[[:space:]]*=[[:space:]]*1")
+vsftpdRemoved=$(dpkg --list | grep "vsftpd")
+sourcesListUpdated=$(cat /etc/apt/sources.list | grep "security")
+autoUpdatesEnabled=$(cat /etc/apt/apt.conf.d/50unattended-upgrades | grep "security" | egrep '\\\\')
+ainzeRemoved=$(cat /etc/shadow | grep "ainze")
+hhenshawRemoved=$(cat /etc/shadow | grep "hhenshaw")
+jolsenNotRootOne=$(awk -F ':' '{print $1 $4}' /etc/group | grep "root" | grep "jolsen")
+jolsenNotRootTwo=$(cat /etc/sudoers | grep "jolsen")
+adanversHasPass=$(awk -F ':' '{print $1 $2}' /etc/shadow | grep "adanvers")
+wschottNotRootOne=$(awk -F ':' '{print $1 $4}' /etc/group | grep "root" | grep "wschott")
+wschottNotRootTwo=$(id -u wschott)
+monelNotKara=$(cat /etc/group | grep "kzorel" | grep "monel")
+onlyJjonesKzorelSsh=$(cat /etc/ssh/sshd_config | grep "AllowUsers")
+if [ "$forensicsQuestionOne" == "msawyer" ]; then
+	echo -e "10		Forensics question 1 correct.\n" >> /cp/points/scoredpoints
+fi
+if [ "$forensicsQuestionTwo" == "projectcadmusmainframe" ]; then
+	echo -e "5 		Forensics question 2 correct.\n" >> /cp/points/scoredpoints
+fi
+if [ "$minPasswordLength" != "" ]; then
+	echo -e "5 		Minimum password length set.\n" >> /cp/points/scoredpoints
+fi
+if [ "$maliciousBinScript" = "" ]; then
+	echo -e "5 		Malicious script in /bin removed.\n" >> /cp/points/scoredpoints
+fi
+if [ "$delugeRemoved" == "" ]; then
+	echo -e "5 		Torrent client deluge removed.\n" >> /cp/points/scoredpoints
+fi
+if [ "$ytDownloaderRemoved" == "" ]; then
+	echo -e "5 		Youtube downloader removed.\n" >> /cp/points/scoredpoints
+fi
+if [ "$cronDailyScript" == "" ]; then
+	echo -e "5 		Malicious script in cron removed.\n" >> /cp/points/scoredpoints
+fi
+if [ "$fireWallConfig" != "" -a "$fireWallConfigTwo" != "" -a  "$fireWallConfigThree" != "" -a "$fireWallConfigFour" != "" ]; then
+	echo -e "5 		Firewall configured.\n" >> /cp/points/scoredpoints
+fi
+if [ "$rootLoginDisabledOne" == *"#root"* ]; then
+	echo -e "5 		Login as root disabled.\n" >> /cp/points/scoredpoints
+fi
+if [ "$maxPasswordAge" -lt "61" ]; then
+	echo -e "5 		Maximum password age set.\n" >> /cp/points/scoredpoints
+fi
+if [ "$sshRootLoginDisabled" != "" ]; then
+	echo -e "5 		SSH root login disabled.\n" >> /cp/points/scoredpoints
+fi
+if [ "$guestAccountDisabled" == *"allow-guest[[:space:]]*=[[:space:]]*no" ]; then
+	echo -e "5 		Guest account login disabled.\n" >> /cp/points/scoredpoints
+fi
+if [ "$rootKernelDisabled" != "" ]; then
+	echo -e "5 		Root access to kernel disabled.\n" >> /cp/points/scoredpoints
+fi
+if [ "$mitmAttackPrevention" != "" ]; then
+	echo -e "5 		Martian Packets logged.\n" >> /cp/points/scoredpoints
+fi
+if [ "$vsftpdRemoved" == "" ]; then
+	echo -e "5 		VSFTPD removed.\n" >> /cp/points/scoredpoints
+fi
+if [ "$sourcesListUpdated" != "" ]; then
+	echo -e "5 		Sources list updated.\n" >> /cp/points/scoredpoints
+fi
+if [ "$autoUpdatesEnabled" == "" ]; then
+	echo -e "5 		Automatic updates enabled.\n" >> /cp/points/scoredpoints
+fi
+if [ "$ainzeRemoved" == "" ]; then
+	echo -e "5 		Unauthorized user ainze removed.\n" >> /cp/points/scoredpoints
+fi
+if [ "$hhenshawRemoved" == "" ]; then
+	echo -e "5 		Unauthorized user hhenshaw removed.\n" >> /cp/points/scoredpoints
+fi
+if [ "$jolsenNotRootOne" == "" -a "$jolsenNotRootTwo" == "" ]; then
+	echo -e "5 		User jolsen no longer root equivalent.\n" >> /cp/points/scoredpoints
+fi
+if [ "$adanversHasPass" != "adanvers" ]; then
+	echo -e "5 		User adanvers has a password.\n" >> /cp/points/scoredpoints
+fi
+if [ "$wschottNotRootOne" == "" -a "$wschottNotRootTwo" -gt "0" ]; then
+	echo -e "5 		User wschott is no longer root equivalent.\n" >> /cp/points/scoredpoints
+fi
+if [ "$monelNotKara" == "" ]; then
+	echo -e "5 		User monel is no longer in the kzorel group.\n" >> /cp/points/scoredpoints
+fi
+if [ "$onlyJjonesKzorelSsh" != "" ]; then
+	echo -e "5 		Users jjones and kzorel are the only ssh login users.\n" >> /cp/points/scoredpoints
+fi
+USER=$(cat /cp/baseusername)
+cp /cp/points/scoredpoints /home/$USER/Desktop/Scoring\ Report
+chmod -R 777 /home/$USER/

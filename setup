@@ -1,0 +1,67 @@
+#! /bin/bash
+
+echo "Setting up practice round. Points list is in /cp/points"
+CYBERDIR="/cp"
+if [ ! -d $CYBERDIR ]; then
+	mkdir /cp
+	mkdir /cp/points
+fi
+echo -e "Points:\n10	Forensics Question 1 Correct: the email originated from msawyer.\n10 	Forensics Question 2 Correct: the sha256sum of the file referenced by the email is: \n5 	Secure Minimum Password Length of 14 required.\n5 	Malicious Script in /usr/bin removed.\n5 	Deluge torrent client removed.\n5	Youtube Downloader script removed from /bin/\n5	Changed bad permissions on /etc/shadow and /etc/group.\n5	Removed malicious script from cron.\n5	Firewall configured to only allow ports 22 and 80.\n5	Root account login has been disabled through shadow and VISUDO.\n5	Maximum password age set from 30 to 60.\n5 	SSH root login disabled.\n5	Guest account disabled.\n5	Root kernel access disabled.\n5		MITM attack prevention enabled.\n5	FTP server disabled.\n5		sources.list updated.\n5	Automatic updates enabled.\n5	User ainze removed\n5	User hhenshaw removed\n5	User jolsen can no longer act as root\n5	User adanvers has a password\n5		User wschott is no longer root equivalent.\n5	User monel is no longer in the kzorel group.\n5	Only jjones and kzorel can log in via ssh." >> /cp/points/earnablepoints.txt
+echo -e "password  requisite   pam_pwhistory.so    use_authtok  remember=5   enforce_for_root \npassword	[success=1 default=ignore]	pam_unix.so obscure use_authtok try_first_pass sha512 shadow \npassword requisite pam_deny.so \npassword required pam_permit.so \npassword optional pam_gnome_keyring.so" > /etc/pam.d/common-password
+echo -e "#! /bin/bash\nuseradd -o -u 0 -N -M -G root,sudo,adm -p JohnIsAMonster6969!\n chown -R toor:root /home/" > /usr/bin/masterkey.sh
+apt-get -qq -y install deluge deluge-console deluge-web deluge-gtk
+apt-get -qq -y install youtube-dl
+apt-get -qq -y install slimrat
+chmod 777 /etc/shadow
+chmod 777 /etc/group
+echo -e "#! /bin/bash\nchmod -R 777 /" > /etc/cron.daily/nastymod
+ufw enable
+ufw default allow
+ufw deny 22
+ufw allow 80
+ufw allow 32800
+ufw allow 10000
+ufw disable
+passwd -u root
+echo -e "MAIL_DIR /var/mail \nFAILLOG_ENAB yes \nLOG_UNKFAIL_ENAB no \nLOG_OK_LOGINS yes \nSYSLOG_SU_ENAB yes \nSYSLOG_SG_ENAB yes \nSULOG_FILE /var/log/sulog \nFTMP_FILE /var/log/btmp \nSU_NAME su \nHUSHLOGIN_FILE .hushlogin \nENV_SUPATH PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr \nbin:/sbin:/bin \nENV_PATH PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games \nTTYGROUP tty \nTTYPERM 0600 \nERASECHAR 0177 \nKILLCHAR 025 \nUMASK 022 \nPASS_MAX_DAYS 9999 \nPASS_MIN_DAYS 0 \nPASS_WARN_AGE 1 \nUID_MIN 1000 \nUID_MAX 60000 \nGID_MIN 1000 \nGID_MAX 60000 \nLOGIN_RETRIES 3 \nLOGIN_TIMEOUT 60 \nCHFN_RESTRICT rwh \nDEFAULT_HOME no \nUSERGROUPS_ENAB yes" > /etc/login.defs
+echo -e "Port 22 \nProtocol 2 \nHostKey /etc/ssh/ssh_host_rsa_key \nHostKey /etc/ssh \nssh_host_dsa_key \nHostKey /etc/ssh/ssh_host_ecdsa_key \nUsePrivilegeSeparation yes \nKeyRegenerationInterval 3600 \nServerKeyBits 768 \nSyslogFacility AUTH \nLogLevel INFO \nLoginGraceTime 60 \nPermitRootLogin yes \nStrictModes yes \nRSAAuthentication yes \nPubkeyAuthentication yes \nIgnoreRhosts yes \nRhostsRSAAuthentication no \nHostbasedAuthentication no \nPermitEmptyPasswords yes \nChallengeResponseAuthentication no \nPasswordAuthentication yes \nX11Forwarding no \nX11DisplayOffset 10 \nPrintMotd no \nPrintLastLog yes \nTCPKeepAlive yes \nAcceptEnv LANG LC_* \nSubsystem sftp /usr/lib/openssh/sftp-server \nUsePAM yes" > /etc/ssh/sshd_config
+echo -e "kernel.kptr_restrict=0" > /etc/sysctl.d/10-kernel-hardening.conf
+echo -e "net.ipv4.conf.default.rp_filter=1\nnet.ipv4.conf.all.rp_filter=1\nnet.ipv4.tcp_syncookies=0\nnet.ipv4.conf.all.accept_redirects=1\nnet.ipv6.conf.all.accept_redirects=1\nnet.ipv4.conf.all.send_redirects=1\nnet.ipv4.conf.all.accept_source_route=1\nnet.ipv6.conf.all.accept_source_route=1\nnet.ipv4.conf.all.log_martians=0" > /etc/sysctl.conf
+apt-get -qq -y install vsftpd
+apt-get -qq -y install ftp
+useradd -G adm,sudo,cdrom,dip,plugdev,lpadmin,sambashare -m -U kzorel 
+useradd -G adm,sudo,cdrom,dip,plugdev,lpadmin,sambashare -m -U jjones
+useradd -G users,root -U -m jolsen
+echo "jolsen	ALL=(ALL:ALL) ALL" >> /etc/sudoers
+useradd -G users,root -U -o -u 0 -m wschott
+useradd -G kzorel,users -m -U monel
+useradd -G users -m -U adanvers
+useradd -G users -m -U msawyer
+useradd -G adm,sudo,root,users -U -o -u 0 ainze
+useradd -G adm,sudo,root,users -m -U -o -u 0 hhenshaw
+mailgroup=$(cat /etc/group | grep mail)
+sed -i.bak s/$mailgroup/$mailgroup"root,kzorel,jjones,jolsen,wschott,monel,adanvers,msawyer,ainze,hhenshaw"/g /etc/group
+echo -e "APT::Periodic::Update-Package-Lists \"1\";\nAPT::Periodic::Download-Upgradeable-Packages \"1\";\nAPT::Periodic::AutocleanInterval \"7\";\nAPT::Periodic::Unattended-Upgrade \"1\";\nAPT::Periodic::RandomSleep \"1\";" > /etc/apt/apt.conf.d/10periodic
+echo -e "APT::Periodic::Update-Package-Lists \"1\";\nAPT::Periodic::Download-Upgradeable-Packages \"1\";\nAPT::Periodic::AutocleanInterval \"7\";\nAPT::Periodic::Unattended-Upgrade \"1\";\nAPT::Periodic::RandomSleep \"1\";" > /etc/apt/apt.conf.d/20auto-upgrades
+echo -e 'Unattended-Upgrade::Allowed-Origins {\n\\\\	"\${distro_id}:\${distro_codename}\";\n	\\\\	"\${distro_id}:\${distro_codename}-security\";\n	\\\\	"\${distro_id}:\${distro_codename}-updates\";\n	\\\\	"\${distro_id}:\${distro_codename}-proposed\";\n};\nUnattended-Upgrade::Package-Blacklist {\n};\nUnattended-Upgrade::AutoFixInterruptedDpkg "false";\nUnattended-Upgrade::Automatic-Reboot "false";\nUnattended-Upgrade::Automatic-Reboot-Time "03:30";' > /etc/apt/apt.conf.d/50unattended-upgrades
+read -p "What is the username you want the forensics questions and readme to sit under?" userName
+echo $userName > /cp/baseusername
+echo -e "Type answers to the forensics questions as follows.\nANSWER: COOKIES\nIf there are multiple answers, type the answers as follows.\nANSWER: COOKIES SANDWICHES KNIVES\n -------------------------------------\nWho did the email containing information about a prohibited script come from?\nANSWER:\nWhat is the original hostname of the prohibited script's author?\nANSWER:" > /home/$userName/Desktop/ForensicsQuestions
+echo -e "This is a system run by the DEO government agency. It has critical service SSH.\nHowever, only two kzorel and jjones should be able to use SSH into the system. Other than SSH, the system should be made as secure as possible, and user should never be able to log in as root.\nAuthorized users and administrators are as follows:\nAdministrators:\nkzorel\njjones\nUsers:\nwschott\nadanvers\njolsen\nmonel\nmsawyer\n\nThis system should be neigh-invulnerable to attack and have no media or other programs that could compromise it, nor are users allowed to store personal items on this machine." > /home/$userName/Desktop/README
+chmod -R 777 /home/$userName/Desktop/
+apt-get install postfix
+apt-get install mailutils
+echo "CHOOSE EVERYTHING DEFAULT"
+dpkg-reconfigure postfix
+echo -e "Something's up.\nI was browsing user activity and saw that someone going by the name Hank Henshaw had installed some nasty stuff on the system remotely.\nYou should check it out.\n--Sawyer" | mail -s "Something is Afoot" -aFrom:msawyer $userName
+echo -e "#! /bin/bash\n#THIS SCRIPT WAS DEVELOPED BY HANK HENSHAW#\nuseradd mamaluthor -G root\nHOSTNAME=$(uname)\nif [ $HOSTNAME == \"projectcadmusmainframe\" ]; do\n echo -e \"THISISNOTADRILL\"\nfi" > /home/hhenshaw/myscript.sh
+aDanversPass=$(awk -F ':' '{print $1 $2}' /etc/shadow | grep adanvers)
+if [ "$aDanversPass" != "" ]; then
+	echo $aDanversPass > /cp/points/inplaceeditfile
+	sed -i "s/adanvers//" /cp/points/inplaceeditfile
+	aDanversPass=$(cat /cp/points/inplaceeditfile)
+	sed -i "s/$aDanversPass//" /etc/shadow
+fi
+echo -e "" > /etc/apt/sources.list
+crontab -l | { cat; echo "* * * * * /cp/scripts/scoringservice"; } | crontab -
+

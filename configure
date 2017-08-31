@@ -1,0 +1,15 @@
+#! /bin/bash
+CYBERDIR="/cp"
+mkdir /cp
+mkdir /cp/points
+mkdir /cp/scripts
+mkdir /cp/mal
+mkdir /cp/backup
+mkdir /cp/logs
+chmod 777 -R /cp
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+mv "$DIRscoringservice" /cp/scripts/scoringservice
+mv "$DIRsetup" /cp/scripts/setup
+chmod +x /cp/scripts/scoringservice
+chmod +x /cp/scripts/setup
+./cp/scripts/setup

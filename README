@@ -1,0 +1,12 @@
+Licensed under GNU Public License (GPL) Version 3.0
+This script was written by Rowan Hart for the purpose of training.
+How to use this script:
+	1. This script is almost completely self-running. Run configure, which will create some directories, enable the scoring service (which will run every 60 seconds), and move the scripts into place.
+	2. The setup script, which is run by the configurator, will CREATE some vulnerabilities on the system. Therefore, it is important that the system be nonessential and preferably clean to avoid any difficulties.
+	3. The setup script will place two forensics questions and a readme file on the desktop of the user selected during installation. It is recommended but not required that the round be run from that user account.
+	4. If there are problems running this suite, try using dos2unix on the individual scripts. It is possible that carriage returns affected implementation.
+Version History:
+	1.0 Wrote the scoring.service, scoring.timer, setup, scoring.sh, README, FQs, and configure scripts. Basic testing and bug fixing implemented, but limited to one person's resources.
+Known Bugs: 
+	1.0 None as of thus far excepting potential issues with systems that have systemd and systemctl disabled for some reason. Potential future implementation will concurrently install systemd and configure it to eliminate issue.
+	1.01 Possible need to use dos2unix on script files. This will be corrected by the final version.
